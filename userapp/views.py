@@ -5,14 +5,16 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import renderer_classes, parser_classes
+from rest_framework.parsers import JSONParser
 
-#函数视图
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from userapp.models import User
+from rest_framework import settings
+from rest_framework.renderers import JSONRenderer,BrowsableAPIRenderer
 
-
+#函数视图
 @csrf_exempt
 def user(request):
     if request.method == 'GET':
@@ -92,6 +94,8 @@ class UserView(View):
 
 #drf类视图
 class UserAPIView(APIView):
+    #局部渲染模块
+    renderer_classes(BrowsableAPIRenderer)
     def get(self,request,*args,**kwargs):
         user_id = kwargs.get("pk")
         if user_id:
@@ -155,3 +159,19 @@ class UserAPIView(APIView):
             "status": 500,
             "message": "删除用户失败"
         })
+
+class StudentAPIView(APIView):
+    #局部渲染
+    # renderer_classes(JSONRenderer)
+    # #局部解析
+    # parser_classes(JSONParser)
+    def get(self,request,*args,**kwargs):
+        user_id = kwargs.get("pk")
+        user_obj = User.objects.get(pk=user_id)
+        print(user_obj)
+        print("get请求")
+        return Response("get")
+    def post(self,request,*args,**kwargs):
+        print(request.data)
+        print("post请求")
+        return Response("post")

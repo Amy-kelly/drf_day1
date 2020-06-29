@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'userapp',
     'rest_framework',
+    'staffapp',
+    'studentapp',
 ]
 
 MIDDLEWARE = [
@@ -121,3 +123,25 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+REST_FRAMEWORK = {
+    #配置全局渲染模块
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer', #以json形式展示
+        # 'rest_framework.renderers.BrowsableAPIRenderer', #浏览器展示
+        # 'rest_framework.renderers.TemplateHTMLRenderer',
+    ],
+    #配置全局解析模块
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',  #只接收json类型
+        'rest_framework.parsers.FormParser', #只接收www-form-urlencoded
+        'rest_framework.parsers.MultiPartParser', #只接收form-data
+    ],
+    #异常处理
+    # 'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    'EXCEPTION_HANDLER': 'utils.exception.exception_handler',
+}
+#静态资源目录
+MEDIA_ROOT = os.path.join(BASE_DIR,"media/")
+
+MEDIA_URL = "/media/"
