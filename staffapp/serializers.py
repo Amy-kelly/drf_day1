@@ -1,4 +1,6 @@
+# from django_redis import exceptions
 from rest_framework import serializers
+from rest_framework import exceptions
 
 
 from drf_day1 import settings
@@ -50,7 +52,28 @@ class EmployeeDeSerializer(serializers.Serializer):
         }
     )
     password = serializers.CharField(required=True)
-    phone = serializers.CharField()
+    phone = serializers.CharField(required=False)
+    re_pwd = serializers.CharField()
+
+    #钩子函数自定义校验规则
+    #局部校验钩子
+    def validate_username(self,value):
+        print(value)
+        if "1" in value:
+            raise exceptions.ValidationError("用户名有误")
+        return value
+
+    #全局校验钩子
+    def validate(self, attrs):
+        pwd = attrs.get("password")
+        re_pwd = attrs.pop("re_pwd") #数据库中没有此字段，故将其弹出
+        if pwd != re_pwd:
+            raise exceptions.ValidationError("两次密码不一致")
+        # print(attrs)  #接收前台发送的所有参数
+        # print(self)
+        return attrs
+
+
     #重写create方法完成新增
     def create(self,validated_data):
         return Employee.objects.create(**validated_data)
